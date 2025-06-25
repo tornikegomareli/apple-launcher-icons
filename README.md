@@ -21,9 +21,24 @@ The tool is smart enough to detect empty icon sets (common in new Xcode projects
 
 ## Installation
 
-### Quick Install
+### Using Homebrew (Recommended)
 
-If you have Swift installed on your Mac, the easiest way is:
+The easiest way to install is via Homebrew:
+
+```bash
+brew tap tornikegomareli/tap
+brew install apple-launcher-icons
+```
+
+Or install directly without adding the tap:
+
+```bash
+brew install tornikegomareli/tap/apple-launcher-icons
+```
+
+### Quick Install from Source
+
+If you prefer to build from source:
 
 ```bash
 git clone https://github.com/tornikegomareli/apple-launcher-icons.git
@@ -35,7 +50,7 @@ This will build the tool and install it to /usr/local/bin so you can use it from
 
 ### Manual Build
 
-If you prefer to build it yourself:
+For manual building:
 
 ```bash
 git clone https://github.com/tornikegomareli/apple-launcher-icons.git

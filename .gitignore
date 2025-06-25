@@ -1,0 +1,143 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Swift & Xcode
+/.build
+/Packages
+xcuserdata/
+DerivedData/
+.swiftpm/
+.netrc
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Build artifacts
+/release
+/debug
+/.build/
+/dist/
+*.dSYM.zip
+*.dSYM
+
+# Test coverage
+.coverage/
+*.xcresult
+coverage.txt
+coverage.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.nova/
+
+# Claude & AI Assistant files
+.claude/
+*.claude
+CLAUDE.md
+.claude.md
+claude.json
+.claude.json
+
+# Project specific
+/flutter_launcher_icons/
+flutter_launcher_icons-*
+
+# Example/test files
+test.png
+test-icon.png
+example-icon.png
+*.test.png
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Logs
+*.log
+logs/
+
+# Documentation build
+docs/_build/
+docs/.build/
+
+# Package files
+*.tar.gz
+*.zip
+
+# Secrets and credentials
+*.key
+*.pem
+*.p12
+*.p8
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Python (if any scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Node (if any web components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ruby (if using fastlane or CocoaPods)
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Bundler
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/

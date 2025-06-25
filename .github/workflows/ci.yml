@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    name: Test and Build
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+    
+    - name: Show Swift version
+      run: swift --version
+    
+    - name: Resolve dependencies
+      run: swift package resolve
+    
+    - name: Build
+      run: swift build -v
+    
+    - name: Run tests
+      run: swift test -v
+    
+    - name: Build for release
+      run: swift build -c release -v
+    
+    - name: Verify executable
+      run: |
+        ./.build/release/apple-launcher-icons --version
+        ./.build/release/apple-launcher-icons --help
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: apple-launcher-icons-${{ github.sha }}
+        path: ./.build/release/apple-launcher-icons
+        retention-days: 7

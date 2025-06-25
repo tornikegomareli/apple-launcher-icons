@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - '.github/workflows/*'
+
+jobs:
+  build-and-release:
+    name: Build and Create Release
+    runs-on: macos-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+    
+    - name: Get version from Package.swift
+      id: get_version
+      run: |
+        VERSION=$(grep 'version:' Sources/AppleLauncherIcons/main.swift | grep -o '"[^"]*"' | tr -d '"')
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Detected version: $VERSION"
+    
+    - name: Check if tag exists
+      id: check_tag
+      run: |
+        if git rev-parse "v${{ steps.get_version.outputs.VERSION }}" >/dev/null 2>&1; then
+          echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+        else
+          echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Build for release
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      run: |
+        swift build -c release
+        cp .build/release/apple-launcher-icons ./apple-launcher-icons
+        chmod +x ./apple-launcher-icons
+    
+    - name: Create tarball
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      run: |
+        tar -czf apple-launcher-icons-macos.tar.gz apple-launcher-icons
+    
+    - name: Generate changelog
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      id: changelog
+      run: |
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -z "$PREVIOUS_TAG" ]; then
+          COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+        else
+          COMMITS=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"- %s" --no-merges)
+        fi
+        
+        # Create changelog file
+        echo "## What's Changed" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "$COMMITS" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...v${{ steps.get_version.outputs.VERSION }}" >> CHANGELOG.md
+    
+    - name: Create Release
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.VERSION }}
+        release_name: Release v${{ steps.get_version.outputs.VERSION }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release Asset
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./apple-launcher-icons-macos.tar.gz
+        asset_name: apple-launcher-icons-macos.tar.gz
+        asset_content_type: application/gzip

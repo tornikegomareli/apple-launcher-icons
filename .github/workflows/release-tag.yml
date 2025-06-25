@@ -1,0 +1,59 @@
+name: Release Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+    
+    - name: Build release binary
+      run: |
+        swift build -c release
+        cp .build/release/apple-launcher-icons ./apple-launcher-icons
+        chmod +x apple-launcher-icons
+        tar -czf apple-launcher-icons-macos.tar.gz apple-launcher-icons
+        shasum -a 256 apple-launcher-icons-macos.tar.gz > apple-launcher-icons-macos.tar.gz.sha256
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./apple-launcher-icons-macos.tar.gz
+        asset_name: apple-launcher-icons-macos.tar.gz
+        asset_content_type: application/gzip
+    
+    - name: Upload SHA256
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./apple-launcher-icons-macos.tar.gz.sha256
+        asset_name: apple-launcher-icons-macos.tar.gz.sha256
+        asset_content_type: text/plain

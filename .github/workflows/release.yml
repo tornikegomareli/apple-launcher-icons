@@ -52,6 +52,7 @@ jobs:
       if: steps.check_tag.outputs.TAG_EXISTS == 'false'
       run: |
         tar -czf apple-launcher-icons-macos.tar.gz apple-launcher-icons
+        shasum -a 256 apple-launcher-icons-macos.tar.gz > apple-launcher-icons-macos.tar.gz.sha256
     
     - name: Generate changelog
       if: steps.check_tag.outputs.TAG_EXISTS == 'false'
@@ -94,3 +95,14 @@ jobs:
         asset_path: ./apple-launcher-icons-macos.tar.gz
         asset_name: apple-launcher-icons-macos.tar.gz
         asset_content_type: application/gzip
+    
+    - name: Upload SHA256
+      if: steps.check_tag.outputs.TAG_EXISTS == 'false'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./apple-launcher-icons-macos.tar.gz.sha256
+        asset_name: apple-launcher-icons-macos.tar.gz.sha256
+        asset_content_type: text/plain

@@ -45,7 +45,7 @@ struct AppleLauncherIcons: ParsableCommand {
 
         For more information, visit: https://github.com/tornikegomareli/apple-launcher-icons
         """,
-        version: "1.0.0",
+        version: "0.1.0",
         subcommands: [Generate.self],
         defaultSubcommand: Generate.self
     )
